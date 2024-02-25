@@ -15,8 +15,8 @@ const userVerify = require("../models/userVerify");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.AUTH_MAIL,
-    pass: process.env.AUTH_PASS,
+    // user: process.env.AUTH_MAIL,
+    // pass: process.env.AUTH_PASS,
   },
 });
 //  transporter verify
@@ -42,7 +42,7 @@ router.get("/register", (req, res) => {
 const sendVerificationEmail = async ({ _id, email, name }, res) => {
   const token = uuidv4() + _id;
   const mailOptions = {
-    from: process.env.AUTH_MAIL,
+    // from: process.env.AUTH_MAIL,
     to: email, // Use the email parameter
     subject: "Verify your email",
     html: `<h1>Hello ${name}</h1><p>Please click on the link below to verify 
@@ -172,7 +172,10 @@ router.post("/login", async (req, res) => {
     if (!user) {
       return res.status(400).json({ msg: "Email not found" });
     }
-
+    
+    if(!user.verified){
+      return res.status(400).json({ msg: "Email not verified" });
+    }
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
